@@ -1,0 +1,40 @@
+using UnityEngine;
+
+public class Unit : MonoBehaviour
+{
+[Header("角色属性选择")]
+   public bool IsMoving;//角色是否在移动
+   public bool IsSelected;//角色是否被选中
+   [Header("角色关联组件")]
+   [SerializeField] protected Animator m_Animator;
+   [SerializeField] private AIPawn m_AIPawn;
+    [SerializeField] private SpriteRenderer m_SpriteRenderer;
+  
+    public bool IsMoving1 => IsMoving;  //获取角色是否在移动
+
+    void Awake()
+    {
+        if(TryGetComponent<AIPawn>(out AIPawn aIPawn))
+        {
+            m_AIPawn = aIPawn;
+        }
+        if(TryGetComponent<Animator>(out  Animator animator))
+        {
+            m_Animator = animator;
+        }
+        if(TryGetComponent<SpriteRenderer>(out  SpriteRenderer m_SpriteRenderer1))
+        {
+            m_SpriteRenderer = m_SpriteRenderer1;
+        }
+        //Debug.Log("选择m成功");
+    }
+
+    public void MoveTo(Vector2 destPosition)
+   {
+        float x = destPosition.x - transform.position.x;
+        m_SpriteRenderer.flipX = x < 0;
+        m_AIPawn.SetDestPosition(destPosition);
+        //Debug.Log("MoveTo");
+   }
+
+}
