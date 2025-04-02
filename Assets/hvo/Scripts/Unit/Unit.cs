@@ -5,13 +5,18 @@ public class Unit : MonoBehaviour
 [Header("角色属性选择")]
    public bool IsMoving;//角色是否在移动
    public bool IsSelected;//角色是否被选中
+   
    [Header("角色关联组件")]
    [SerializeField] protected Animator m_Animator;
    [SerializeField] private AIPawn m_AIPawn;
     [SerializeField] private SpriteRenderer m_SpriteRenderer;
-  
-    public bool IsMoving1 => IsMoving;  //获取角色是否在移动
 
+
+    private Material heightMaterial;//点击特效
+    private Material oriMaterial;   //原本的材质
+  
+    
+    public bool IsMoving1 => IsMoving;  //获取角色是否在移动
     void Awake()
     {
         if(TryGetComponent<AIPawn>(out AIPawn aIPawn))
@@ -26,7 +31,9 @@ public class Unit : MonoBehaviour
         {
             m_SpriteRenderer = m_SpriteRenderer1;
         }
-        //Debug.Log("选择m成功");
+        oriMaterial = m_SpriteRenderer.material;
+        heightMaterial = Resources.Load<Material>("Materials/Outline");
+
     }
 
     public void MoveTo(Vector2 destPosition)
@@ -36,5 +43,24 @@ public class Unit : MonoBehaviour
         m_AIPawn.SetDestPosition(destPosition);
         //Debug.Log("MoveTo");
    }
+
+
+    //点击特效------------------------------------------------------------------------------
+   public void Select()//角色被选择时的特效
+    {
+        SelectHeight();
+    }
+    public void UnSelect()//角色没有被选择时的特效
+    {
+        UnSelectHeight();
+    }
+    private void SelectHeight()//点击特效显现
+    {
+        m_SpriteRenderer.material = heightMaterial;
+    }
+    private void UnSelectHeight()//取消点击特效显现
+    {
+        m_SpriteRenderer.material = oriMaterial;
+    }
 
 }

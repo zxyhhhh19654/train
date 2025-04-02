@@ -33,7 +33,7 @@ public class GameManager : SigleManager<GameManager>
         RaycastHit2D hit2D = Physics2D.Raycast(worldPosition, Vector2.zero);
         Debug.Log("射线");
 
-        DispalyClickEffect(worldPosition);//显示鼠标特效
+        
 
         if (HsaClickOnUnit(hit2D, out var unit))
         {
@@ -58,7 +58,7 @@ public class GameManager : SigleManager<GameManager>
         
         Debug.Log("选择地形行动");
         
-
+        DispalyClickEffect(worldPosition);//显示鼠标特效
         m_ActvieUnit.MoveTo(worldPosition);//选择目的地
     }
     bool HsaClickOnUnit(RaycastHit2D hit2D, out Unit unit)
@@ -72,7 +72,7 @@ public class GameManager : SigleManager<GameManager>
         return false;
     }
 
-   bool HasCilckOnHuman(Unit unit) => m_ActvieUnit != null && m_ActvieUnit == unit;
+   bool HasCilckOnHuman(Unit unit) => m_ActvieUnit != null ;
 
     void HandOnUnit(Unit unit)
     {
@@ -86,12 +86,14 @@ public class GameManager : SigleManager<GameManager>
     void SelectNewUnit(Unit unit)
     {
         Debug.Log("变更单位");
-
         m_ActvieUnit = unit;
+        m_ActvieUnit.Select();
     }
     void CancelUnit()//取消unit
     {
+        m_ActvieUnit.UnSelect();
         m_ActvieUnit = null;//将activeunit置为空
+        
     }
 
     void DispalyClickEffect(Vector2 worldpoistion)//显示鼠标
