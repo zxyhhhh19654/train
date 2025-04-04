@@ -18,17 +18,11 @@ public class ActionBar : MonoBehaviour  //动作按钮
     {
         m_OriColor = m_GroundImage.color;//将地板最开始的颜色保存起来
     }
-    // public void RegisterAction(Sprite icon,UnityAction unityAction)//复制一个按钮到它的子路径
-    // {
-    //     var actionButton = Instantiate(m_ActionButtonPrefab,transform);
-    //     actionButton.InitIcon(icon,unityAction);
-    //     m_ActionButtions.Add(actionButton);//将它添加到数组中
-    // }
-    public void RegisterAction()//复制一个按钮到它的子路径
+    public void RegisterAction(Sprite icon,UnityAction unityAction)//复制一个按钮到它的子路径
     {
         var actionButton = Instantiate(m_ActionButtonPrefab,transform);
+        actionButton.InitIcon(icon,unityAction);
         m_ActionButtions.Add(actionButton);//将它添加到数组中
-        Debug.Log("注册按钮成功");
     }
 
     public void ClearAction()//删除所有的按钮

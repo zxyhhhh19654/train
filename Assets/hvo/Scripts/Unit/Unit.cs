@@ -10,7 +10,7 @@ public class Unit : MonoBehaviour
    [SerializeField] protected Animator m_Animator;
    [SerializeField] private AIPawn m_AIPawn;
     [SerializeField] private SpriteRenderer m_SpriteRenderer;
-    //[SerializeField] private ActionSo[] m_Actions;
+    [SerializeField] private ActionSo[] m_Actions;
 
 
     private Material heightMaterial;//点击特效
@@ -18,7 +18,7 @@ public class Unit : MonoBehaviour
   
     
     public bool IsMoving1 => IsMoving;  //获取角色是否在移动
-    //public ActionSo[] Actions => m_Actions;  //获取角色的技能
+    public ActionSo[] Actions => m_Actions;  //获取角色的技能
     void Awake()
     {
         if(TryGetComponent<AIPawn>(out AIPawn aIPawn))
