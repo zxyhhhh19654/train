@@ -46,6 +46,10 @@ public class GameManager : SigleManager<GameManager>
 
     void DetectClick(Vector2 inputPosition)
     {
+        if(HvoUtil.IsPointerOverUIElement())//如果点击到ui按钮，直接返回
+        {
+            return;
+        }
         if (Camera.main == null)
         {  
             Debug.LogError("Main Camera is not assigned!");
@@ -86,6 +90,7 @@ public class GameManager : SigleManager<GameManager>
     }
     bool HsaClickOnUnit(RaycastHit2D hit2D, out Unit unit)
     {
+        
         if (hit2D.collider != null && hit2D.collider.TryGetComponent<Unit>(out var clickedUnit))
         {
             unit = clickedUnit;
