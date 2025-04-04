@@ -9,16 +9,39 @@ public class GameManager : SigleManager<GameManager>
     [SerializeField] private Unit m_ActvieUnit; //当前选中的单位
     [Header("UI")]
     [SerializeField] private GameObject m_ClickToPointPrefab;//点击地面特效预制体
-  
+    [SerializeField] private ActionBar m_ActionBar;//动作按钮
 
+
+    void Start()
+    {
+        ClearActionBarUI();//开始时清除ui
+        m_ActionBar.Hide();//开始时隐藏地板
+    }
     Vector2 tmp;
     void Update()
     {
         if(HvoUtil.TryGetShortLiftClickPosition(out Vector2 inputPosition))
         {
-            
             DetectClick(inputPosition);
         }
+    }
+
+    void ClearActionBarUI()//消除所有ui
+    {
+        m_ActionBar.ClearAction();//删除按钮后，直接消失
+
+        m_ActionBar.Hide();//隐藏地板
+    }
+    void ShowUnitAntions(Unit unit)//展示ui的手段：地板转化颜色，创建按钮。
+    {
+        ClearActionBarUI();//在展示新ui之前要删除之前的ui，要不然会ui会叠加
+        //if (unit.Actions.Length == 0) return;
+        m_ActionBar.Show();//展示地板
+        m_ActionBar.RegisterAction();
+        // foreach (var action in unit.Actions)
+        // {
+            
+        // }
     }
 
     void DetectClick(Vector2 inputPosition)
@@ -79,8 +102,9 @@ public class GameManager : SigleManager<GameManager>
         if (HasCilckOnHuman(unit))
         {
             CancelUnit();
+            return;
         }
-
+        
         SelectNewUnit(unit);
     }
     void SelectNewUnit(Unit unit)
@@ -88,11 +112,17 @@ public class GameManager : SigleManager<GameManager>
         Debug.Log("变更单位");
         m_ActvieUnit = unit;
         m_ActvieUnit.Select();
+        ShowUnitAntions(unit);//展示ui
     }
     void CancelUnit()//取消unit
     {
         m_ActvieUnit.UnSelect();
+
+        m_ActionBar.ClearAction();//删除按钮后，直接消失
+        m_ActionBar.Hide();//隐藏地板
+
         m_ActvieUnit = null;//将activeunit置为空
+
         
     }
 
