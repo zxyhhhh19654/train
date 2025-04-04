@@ -5,6 +5,11 @@ using UnityEngine.Tilemaps;
 
 public class GameManager : SigleManager<GameManager>
 {
+    [Header("Tilemap")]
+    [SerializeField] private Tilemap m_WalkableTileMap;//可行走的瓦片地图
+    [SerializeField] private Tilemap m_OverlayTileMap;//覆盖的瓦片地图
+    [SerializeField] private Tilemap[] m_UnreachableTilemaps;//不可行走的瓦片地图
+
     [Header("游戏状态")]
     [SerializeField] private Unit m_ActvieUnit; //当前选中的单位
 
@@ -57,7 +62,15 @@ public class GameManager : SigleManager<GameManager>
     }
     public void StartBuildProcess(BuildAcitionSO buildAcition)
     {
+        m_PlacementProcess = new placementProcess(
+            buildAcition,
+            m_WalkableTileMap,
+            m_OverlayTileMap,
+            m_UnreachableTilemaps
+        );//建造过程
+        m_PlacementProcess.ShowPlacementOutline();//展示建造前的tower图片设置
         Debug.Log("开始建造过程" + buildAcition.ActionName);
+        
     }
 
     // public void StartBuildProcess(BuildAcitionSO buildAcition)//建造过程
@@ -82,6 +95,11 @@ public class GameManager : SigleManager<GameManager>
 
     void DetectClick(Vector2 inputPosition)
     {
+
+        if (HvoUtil.IsPointerOverUIElement())//如果点击到ui按钮，直接返回
+        {
+            return;
+        }
 
         if (Camera.main == null)
         {
@@ -110,10 +128,6 @@ public class GameManager : SigleManager<GameManager>
 
     void HandOnGrand(Vector2 worldPosition)
     {
-        if (HvoUtil.IsPointerOverUIElement())//如果点击到ui按钮，直接返回
-        {
-            return;
-        }
         if (m_ActvieUnit == null)
         {
             Debug.Log("没有选择单位");
