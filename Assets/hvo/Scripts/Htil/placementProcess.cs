@@ -24,6 +24,9 @@ public class placementProcess
     private Color m_HighlightColor = new Color(0,0.8f,1,0.4f);
     private Color m_BlockedColor = new Color(1f,0f,0,0.8f);
     public BuildAcitionSO BuildAcitionSO => m_BuildAcition;
+
+    public int GoldCost => m_BuildAcition.GoldCost;
+    public int FoodCost => m_BuildAcition.WoodCost;
     
     public placementProcess(
      BuildAcitionSO buildAcitionSO,
@@ -61,7 +64,7 @@ public class placementProcess
 
     public void ShowPlacementOutline()//展示建造前的tower图片设置
     {
-        //Debug.Log("ShowPlacementOutline");
+        
         m_PlacementOutline = new GameObject("PlacementOutline");//创建建造前的tower阴影
         var renderer = m_PlacementOutline.AddComponent<SpriteRenderer>();//增加组件
         renderer.sortingOrder = 999;//设置层数
@@ -70,32 +73,47 @@ public class placementProcess
         Debug.Log(Sprite1);
         renderer.sprite = Sprite1;//tower阴影添加照片
     }
-    // public void CleanUp()
-    // {
-    //     if(m_PlacementOutline != null)
-    //     {
-    //         GameObject.Destroy(m_PlacementOutline);//销毁建造前的tower阴影
-    //         m_PlacementOutline = null;
-    //     }
-    //     ClearHightlight();//清除高亮化
-    // }
-    // public bool TryFinalizePosition(out Vector3 buildposition)//尝试确定建造位置
-    // {
-    //     if(IsPlacementAreaValid())
-    //     {
-    //         ClearHightlight();
-    //         buildposition = m_PlacementOutline.transform.position;//将建造前的tower阴影位置传递给buildposition
-    //         //m_PlacementOutline.transform.position = Vector3.zero;//将建造前的tower阴影位置传递给buildposition
-    //         UnityEngine.Object.Destroy(m_PlacementOutline);//销毁建造前的tower阴影
-    //     }
-    //     Debug.Log("尝试确定建造位置");
-    //     buildposition = Vector3.zero;//将建造前的tower阴影位置传递给buildposition
-    //     return false;
-    // }
-    // bool IsPlacementAreaValid()//是否在可行走的层级中
-    // {
-    //     return true;
-    // }
+    void ClearHightlight()
+    {
+        if(m_HeighlightPositions == null) return;
+        foreach(var titlePosition in m_HeighlightPositions )
+        {
+            //Debug.Log("消除");
+            m_OverlayTileMap.SetTile(titlePosition,null);
+        }
+    }
+    public void CleanUp()
+    {
+        if(m_PlacementOutline != null)
+        {
+            GameObject.Destroy(m_PlacementOutline);//销毁建造前的tower阴影
+            m_PlacementOutline = null;
+        }
+        ClearHightlight();//清除高亮化
+    }
+    public bool TryFinalizePosition(out Vector3 buildposition)//尝试确定建造位置
+    {
+        if(IsPlacementAreaValid())
+        {
+            ClearHightlight();
+            buildposition = m_PlacementOutline.transform.position;//将建造前的tower阴影位置传递给buildposition
+            UnityEngine.Object.Destroy(m_PlacementOutline);//销毁建造前的tower阴影
+            //m_PlacementOutline.transform.position = Vector3.zero;//将建造前的tower阴影位置传递给buildposition
+            return true;
+        }
+        Debug.Log("尝试确定建造位置");
+        buildposition = Vector3.zero;//将建造前的tower阴影位置传递给buildposition
+        return false;
+    }
+    bool IsPlacementAreaValid()//是否在可行走的层级中
+    {
+        foreach(var titlePosition in m_HeighlightPositions)//将建造范围的 每一个瓦片格子 都拿出来
+        {
+            if(!CanPlaceTile(titlePosition)) return false;//如果有一个瓦片格子不符合条件，则返回false
+        }
+        return true;//如果所有瓦片格子都符合条件，则返回true
+       
+    }
     bool IsInUnreachableTilemap(Vector3Int tilePosition)//是否在 不能行走层级中瓦片上
     {
 
@@ -167,15 +185,7 @@ public class placementProcess
         }
 
     // }
-    void ClearHightlight()
-    {
-        if(m_HeighlightPositions == null) return;
-        foreach(var titlePosition in m_HeighlightPositions )
-        {
-            //Debug.Log("消除");
-            m_OverlayTileMap.SetTile(titlePosition,null);
-        }
-    }
+    
     
     
     // //检测有没有在 不能行走的瓦片上，如果在，返回true，反之，则返回false

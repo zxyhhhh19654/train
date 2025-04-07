@@ -20,6 +20,11 @@ public class BuildAcitionSO : ActionSo
     public Vector3Int BuildingSize => m_BuildingSize;
     public Vector3Int OriginOffset => m_OriginOffset;
 
+    [SerializeField] private int m_goldCost; //建筑预制体
+    public int GoldCost => m_goldCost; //建筑预制体的金币消耗
+    [SerializeField] private int m_woodCost; //建筑预制体 
+    public int WoodCost => m_woodCost; //建筑预制体的食物消耗
+
     public override void Execute(GameManager manager)
     {
        manager.StartBuildProcess(this);

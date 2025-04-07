@@ -20,6 +20,13 @@ public class GameManager : SigleManager<GameManager>
     [SerializeField] private ConfirmationBar m_BuildConfirmationBar;//建造确认栏
 
 
+    private int m_Gold = 1000;//金币数量
+    public int Gold => m_Gold;//金币数量的getter
+
+    private int m_Wood = 1000;//食物数量
+    public int Wood => m_Wood;//食物数量的getter
+
+
     void Start()
     {
         ClearActionBarUI();//开始时清除ui
@@ -177,12 +184,52 @@ public class GameManager : SigleManager<GameManager>
     }
     void ConfirmBuildPlace()
     {
-        Debug.Log("确认建造");
+        if(!TryDeductResource(m_PlacementProcess.GoldCost, m_PlacementProcess.FoodCost))//尝试扣除资源
+        {
+            Debug.Log("资源不足，无法建造");
+            return;
+        }
+        if(m_PlacementProcess.TryFinalizePosition(out Vector3 buildPosition))//尝试确定建造位置
+        {
+            m_BuildConfirmationBar.HideConfirmationBar();
+            m_PlacementProcess = null;
+            Debug.Log("确认建造位置" + buildPosition);
+        }
+        else
+        {
+            RevertResource(m_PlacementProcess.GoldCost, m_PlacementProcess.FoodCost);//还原资源
+            Debug.Log("建造位置不合法");
+        }
+    }
+
+    void RevertResource(int goldCost, int woodCost)//还原资源
+    {
+        m_Gold += goldCost;//还原金币
+        m_Wood += woodCost;//还原食物
+        Debug.Log("还原资源" + goldCost + " " + woodCost);
     }
     void CancelBuildPlace()
     {
+        m_BuildConfirmationBar.HideConfirmationBar();
+        m_PlacementProcess = null;
         Debug.Log("取消建造");
         
+    }
+
+    bool TryDeductResource(int goldCost, int woodCost)//尝试扣除资源
+    {
+        if (m_Gold >= goldCost && m_Wood >= woodCost)//如果金币和食物都足够
+        {
+            m_Gold -= goldCost;//扣除金币
+            m_Wood -= woodCost;//扣除食物
+            return true;
+        }
+        return false;
+    }
+    void OnGUI()
+    {
+        GUI.Label(new Rect(10,40,200,20),"Gold:" + m_Gold.ToString(),new GUIStyle{ fontSize = 30});//显示金币数量
+        GUI.Label(new Rect(10,80,200,20),"Wood:" + m_Wood.ToString(),new GUIStyle{ fontSize = 30});//显示金币数量
     }
 
 }
