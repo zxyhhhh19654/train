@@ -17,6 +17,7 @@ public class GameManager : SigleManager<GameManager>
     [Header("UI")]
     [SerializeField] private GameObject m_ClickToPointPrefab;//点击地面特效预制体
     [SerializeField] private ActionBar m_ActionBar;//动作按钮
+    [SerializeField] private ConfirmationBar m_BuildConfirmationBar;//建造确认栏
 
 
     void Start()
@@ -62,6 +63,10 @@ public class GameManager : SigleManager<GameManager>
     }
     public void StartBuildProcess(BuildAcitionSO buildAcition)
     {
+        if(m_PlacementProcess != null)
+        {
+            return;
+        }
         m_PlacementProcess = new placementProcess(
             buildAcition,
             m_WalkableTileMap,
@@ -69,29 +74,11 @@ public class GameManager : SigleManager<GameManager>
             m_UnreachableTilemaps
         );//建造过程
         m_PlacementProcess.ShowPlacementOutline();//展示建造前的tower图片设置
+        m_BuildConfirmationBar.ShowConfirmationBar();
+        m_BuildConfirmationBar.SetupHooks(ConfirmBuildPlace, CancelBuildPlace);//设置确认和取消按钮的回调函数
         Debug.Log("开始建造过程" + buildAcition.ActionName);
         
     }
-
-    // public void StartBuildProcess(BuildAcitionSO buildAcition)//建造过程
-    // {
-
-    //     Debug.Log("开始建造过程" + buildAcition.ActionName);
-    //     if(m_PlacementProcess != null)
-    //     {
-    //         return;//清除之前的地表位置
-    //     }
-    //     Debug.Log("Starting action" + buildAcition.ActionName);
-    //     m_PlacementProcess = new placementProcess(
-    //         buildAcition,
-    //         m_WalkableTileMap,
-    //         m_OverlayTileMap,
-    //         m_UnreachableTilemaps
-    //     );//为什么这里不用局部变量
-    //     因为这个变量在update（）还要调用
-    //     m_PlacementProcess.ShowPlacementOutline();//查看显示地表位置
-    //    m_BuildConfirmationBar.SetupHooks(ConfirmBuildPlacement, CancelBuildPlacement);//设置确认和取消按钮的回调函数
-    // }
 
     void DetectClick(Vector2 inputPosition)
     {
@@ -187,6 +174,15 @@ public class GameManager : SigleManager<GameManager>
         Debug.Log("进入鼠标复制页面");
         Instantiate(m_ClickToPointPrefab, worldpoistion, Quaternion.identity);
         Debug.Log("鼠标复制结束");
+    }
+    void ConfirmBuildPlace()
+    {
+        Debug.Log("确认建造");
+    }
+    void CancelBuildPlace()
+    {
+        Debug.Log("取消建造");
+        
     }
 
 }

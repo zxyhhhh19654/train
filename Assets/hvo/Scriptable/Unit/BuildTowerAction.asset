@@ -19,4 +19,4 @@ MonoBehaviour:
   m_FoundationSprite: {fileID: 0}
   m_CompletSprite: {fileID: 0}
   m_BuildingSize: {x: 2, y: 3, z: 0}
-  m_OriginOffset: {x: 0, y: 0, z: 0}
+  m_OriginOffset: {x: -1, y: -2, z: 0}

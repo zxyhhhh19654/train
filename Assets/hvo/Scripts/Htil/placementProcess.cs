@@ -46,10 +46,13 @@ public class placementProcess
         {
             HighlightTiles(m_PlacementOutline.transform.position);//实时显示tower的瓦片格子范围
         }
+        if(HvoUtil.IsPointerOverUIElement()) return;//如果鼠标在UI上，则不执行下面的代码
+        
         if(HvoUtil.TryGetHoldPosition(out Vector3 holdWorldPosition))
         {
             m_PlacementOutline.transform.position = SnapToGrid(holdWorldPosition);//实时确定tower阴影按照鼠标位置移动
         }
+        
         // if(HvoUtil.TryGetHoldPosition(out Vector3 worldPositionInt))
         // {
         //     m_PlacementOutline.transform.position = SnapToGrid(worldPositionInt);//实时确定tower阴影按照鼠标位置移动
