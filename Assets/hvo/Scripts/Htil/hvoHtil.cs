@@ -18,13 +18,13 @@ public static class HvoUtil     //这个类是一个工具类，主要用于处�
     private static bool m_HasInitialPositionSet = false; //这个变量是用来判断初始点击位置是否已经设置的，主要是为了处理短按和长按事件
     //这个变量是用来保存初始点击位置的，主要是为了处理短按和长按事件
 
-    public static bool TryGetShortLiftClickPosition(out Vector2 inputPosition, float maxDistance = 5f)
+    public static bool TryGetShortLeftClickPosition(out Vector2 inputPosition, float maxDistance = 5f)
     {
             inputPosition = InputPosition;
 
             if (HvoUtil.IsleftClickOrTapDawn)
             {
-                Debug.Log("保存位置");
+                //Debug.Log("保存位置");
                 m_HasInitialPositionSet = true; // 标记初始位置已设置
                 m_InitialTouchPosition = InputPosition;//这个只是将初始位置保存,用来与离开时手指位置进行比较
                 return false; // 返回false，表示没有检测到短按
@@ -33,7 +33,6 @@ public static class HvoUtil     //这个类是一个工具类，主要用于处�
             {
                 if (Vector2.Distance(m_InitialTouchPosition, InputPosition) < maxDistance)
                 {
-                    
                     return true;
                 }
             }
@@ -45,10 +44,6 @@ public static class HvoUtil     //这个类是一个工具类，主要用于处�
             return false;
     }
 
-
-    // public static Vector3 InputHoldWorldPosition => Input.touchCount > 0 ?
-    //          Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position ): 
-    //         Input.GetMouseButton(0) ?  Camera.main.ScreenToWorldPoint(Input.mousePosition ): Vector2.zero;
     public static bool TryGetHoldPosition(out Vector3 worldPosition)        //获取点击位置
     //这个函数是用来获取点击位置的，主要是为了处理触摸和鼠标点击事件
     {

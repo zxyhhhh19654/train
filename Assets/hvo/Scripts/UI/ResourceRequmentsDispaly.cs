@@ -8,7 +8,6 @@ public class ResourceRequmentsDispaly : MonoBehaviour
     [SerializeField] private TextMeshProUGUI m_GoldText;
     [SerializeField] private TextMeshProUGUI m_WoodText;
 
-    //[SerializeField] private GameManager gameManager; //资源需求显示
     void UpadtaColorRequirements(int reqGold, int reqWood)
     {
         var manager = GameManager.Get();

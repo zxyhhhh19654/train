@@ -16,12 +16,13 @@ public class ClickToPoint : MonoBehaviour   //管理鼠标ui
     {
 
         m_OriScale = transform.localScale;
-        Debug.Log("初始位置" + m_OriScale);
+        //Debug.Log("初始位置" + m_OriScale);
         
     }
 
     void Update()       // Update is called once per frame 鼠标实时显示
     {
+        //Debug.Log("鼠标实时显示" + m_OriScale);
         timer += Time.deltaTime;
         m_FreTime += Time.deltaTime;
 
@@ -34,7 +35,7 @@ public class ClickToPoint : MonoBehaviour   //管理鼠标ui
         {
             float data = (timer - m_Durion*0.9f) / (m_Durion*0.1f);
             spriteRenderer.color =  new Color(1,1,1,1-data);        //渐变透明度，消失
-            Debug.Log("渐变透明度，消失" + data);
+            //Debug.Log("渐变透明度，消失" + data);
         }
 
         if(timer > m_Durion)

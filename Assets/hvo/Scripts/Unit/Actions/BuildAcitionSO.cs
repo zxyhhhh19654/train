@@ -7,12 +7,15 @@ using UnityEngine.UI;
 [CreateAssetMenu(fileName = "BuildAction", menuName = "hvo/Actions/BuildAction")]
 public class BuildAcitionSO : ActionSo
 {
+    [SerializeField] private StructureUnit m_StructureUnifab; //建筑预制体
     [SerializeField]private Sprite m_PlacementSprite;   //放置图片
     [SerializeField]private Sprite m_FoundationSprite;   //基础图标（正在建造）
     [SerializeField]private Sprite m_CompletSprite;      //完成图片
     public Sprite PlacementSprite => m_PlacementSprite;     
     public Sprite FoundationSprite => m_FoundationSprite;  
     public Sprite CompletSprite => m_CompletSprite;
+
+    public StructureUnit StructureUnifab => m_StructureUnifab; //建筑预制体
 
     [SerializeField] private Vector3Int m_BuildingSize;     //建筑瓦片大小
     [SerializeField] private Vector3Int m_OriginOffset;         //建筑原点偏移量

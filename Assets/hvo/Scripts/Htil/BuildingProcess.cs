@@ -12,12 +12,17 @@ public class BuildingProcess
     )
     {
         m_BuildAcition = buildAcition;
-        var structureGo = new GameObject(m_BuildAcition.name);
-        var renderer = structureGo.AddComponent<SpriteRenderer>();
+        var structure = Object.Instantiate(m_BuildAcition.StructureUnifab);
+        structure.Renderer.sprite = m_BuildAcition.PlacementSprite;
+        structure.transform.position = placementPosition;
+        structure.RegisterProcess(this);
+    }
 
-        renderer.sortingOrder = 999;
-        renderer.sprite = m_BuildAcition.FoundationSprite;
-        structureGo.transform.position = placementPosition;
+
+    public void Update()
+    {
+        Debug.Log("BuildingProcess Update called.");
+        // Update the building process here if needed
     }
     
 }

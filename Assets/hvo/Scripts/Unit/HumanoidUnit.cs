@@ -21,5 +21,9 @@ public class HumanoidUnit : Unit
         if (velocity.magnitude <= 0) IsMoving = false;
         else IsMoving = true;
         m_Animator.SetFloat("Speed",velocity.magnitude);
+
+        UpdateBehaviour();
     }
+
+    protected virtual void UpdateBehaviour(){}
 }

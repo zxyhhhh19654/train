@@ -37,11 +37,12 @@ public class GameManager : SigleManager<GameManager>
     {
         if (m_PlacementProcess != null)
         {
+
             m_PlacementProcess.Update();//更新建造过程
         }
         else
         {
-            if (HvoUtil.TryGetShortLiftClickPosition(out Vector2 inputPosition))
+            if (HvoUtil.TryGetShortLeftClickPosition(out Vector2 inputPosition))
             {
                 DetectClick(inputPosition);
             }
@@ -70,7 +71,7 @@ public class GameManager : SigleManager<GameManager>
     }
     public void StartBuildProcess(BuildAcitionSO buildAcition)
     {
-        if(m_PlacementProcess != null)
+        if (m_PlacementProcess != null)
         {
             return;
         }
@@ -84,8 +85,8 @@ public class GameManager : SigleManager<GameManager>
         m_BuildConfirmationBar.ShowConfirmationBar();
         m_BuildConfirmationBar.ShowResourceRequirements(buildAcition.GoldCost, buildAcition.WoodCost);//展示建造所需资源
         m_BuildConfirmationBar.SetupHooks(ConfirmBuildPlace, CancelBuildPlace);//设置确认和取消按钮的回调函数
-        Debug.Log("开始建造过程" + buildAcition.ActionName);
-        
+        //Debug.Log("开始建造过程" + buildAcition.ActionName);
+
     }
 
     void DetectClick(Vector2 inputPosition)
@@ -102,20 +103,19 @@ public class GameManager : SigleManager<GameManager>
             return;
         }
         Vector2 worldPosition = Camera.main.ScreenToWorldPoint(inputPosition);
-        Debug.Log("世界坐标");
+
         RaycastHit2D hit2D = Physics2D.Raycast(worldPosition, Vector2.zero);
-        Debug.Log("射线");
 
 
 
         if (HsaClickOnUnit(hit2D, out var unit))
         {
-            Debug.Log("选择单位");
+
             HandOnUnit(unit);
         }
         else
         {
-            Debug.Log("选择地形");
+
             HandOnGrand(worldPosition);
         }
 
@@ -125,12 +125,8 @@ public class GameManager : SigleManager<GameManager>
     {
         if (m_ActvieUnit == null)
         {
-            Debug.Log("没有选择单位");
             return;
         }
-
-        Debug.Log("选择地形行动");
-
         DispalyClickEffect(worldPosition);//显示鼠标特效
         m_ActvieUnit.MoveTo(worldPosition);//选择目的地
     }
@@ -160,7 +156,7 @@ public class GameManager : SigleManager<GameManager>
     }
     void SelectNewUnit(Unit unit)
     {
-        Debug.Log("变更单位");
+
         m_ActvieUnit = unit;
         m_ActvieUnit.Select();
         ShowUnitAntions(unit);//展示ui
@@ -170,42 +166,52 @@ public class GameManager : SigleManager<GameManager>
         m_ActvieUnit.UnSelect();
         m_ActionBar.ClearAction();//删除按钮后，直接消失
         m_ActionBar.Hide();//隐藏地板
-        
 
         m_ActvieUnit = null;//将activeunit置为空
-
-
     }
 
     void DispalyClickEffect(Vector2 worldpoistion)//显示鼠标
     {
-        Debug.Log("进入鼠标复制页面");
+
         Instantiate(m_ClickToPointPrefab, worldpoistion, Quaternion.identity);
-        Debug.Log("鼠标复制结束");
+
     }
     void ConfirmBuildPlace()
     {
-        if(!TryDeductResource(m_PlacementProcess.GoldCost, m_PlacementProcess.FoodCost))//尝试扣除资源
+        if (m_PlacementProcess == null)
         {
-            Debug.Log("资源不足，无法建造");
+           // Debug.LogError("m_PlacementProcess is null. Cannot confirm build placement.");
+            m_BuildConfirmationBar.HideConfirmationBar();
             return;
         }
-        if(m_PlacementProcess.TryFinalizePosition(out Vector3 buildPosition))//尝试确定建造位置
+        var currentProcess = m_PlacementProcess;
+        int goldCost = currentProcess.GoldCost;
+        int woodCost = currentProcess.FoodCost;
+        if (!TryDeductResource(goldCost, woodCost))//尝试扣除资源
+        {
+            //Debug.Log("资源不足，无法建造！");
+            return;
+        }
+        if (m_PlacementProcess.TryFinalizePosition(out Vector3 buildPosition))//尝试确定建造位置
         {
             m_BuildConfirmationBar.HideConfirmationBar();
-            
+
             new BuildingProcess(
-                m_PlacementProcess.BuildAcitionSO,
+                currentProcess.BuildAcitionSO,
                 buildPosition
             );
-            
+            m_ActvieUnit.MoveTo(buildPosition);//选择目的地
+            //Debug.Log("建造位置合法！");
             m_PlacementProcess = null;
-            Debug.Log("确认建造位置" + buildPosition);
+
         }
         else
         {
-            RevertResource(m_PlacementProcess.GoldCost, m_PlacementProcess.FoodCost);//还原资源
-            Debug.Log("建造位置不合法");
+
+            RevertResource(goldCost, woodCost);
+            currentProcess.CleanUp();
+            m_PlacementProcess = null;
+
         }
     }
 
@@ -213,13 +219,16 @@ public class GameManager : SigleManager<GameManager>
     {
         m_Gold += goldCost;//还原金币
         m_Wood += woodCost;//还原食物
-        Debug.Log("还原资源" + goldCost + " " + woodCost);
+
     }
     void CancelBuildPlace()
     {
+        if (m_PlacementProcess != null)
+        {
+            m_PlacementProcess.CleanUp();
+            m_PlacementProcess = null;
+        }
         m_BuildConfirmationBar.HideConfirmationBar();
-        m_PlacementProcess = null;
-        Debug.Log("取消建造");
     }
 
     bool TryDeductResource(int goldCost, int woodCost)//尝试扣除资源
@@ -228,17 +237,15 @@ public class GameManager : SigleManager<GameManager>
         {
             m_Gold -= goldCost;//扣除金币
             m_Wood -= woodCost;//扣除食物
-            Debug.Log("扣除资源" + goldCost + " " + woodCost);
             return true;
-            
+
         }
-        Debug.Log("资源不足，无法建造" + goldCost + " " + woodCost);
         return false;
     }
     void OnGUI()
     {
-        GUI.Label(new Rect(10,40,200,20),"Gold:" + m_Gold.ToString(),new GUIStyle{ fontSize = 30});//显示金币数量
-        GUI.Label(new Rect(10,80,200,20),"Wood:" + m_Wood.ToString(),new GUIStyle{ fontSize = 30});//显示金币数量
+        GUI.Label(new Rect(10, 40, 200, 20), "Gold:" + m_Gold.ToString(), new GUIStyle { fontSize = 30 });//显示金币数量
+        GUI.Label(new Rect(10, 80, 200, 20), "Wood:" + m_Wood.ToString(), new GUIStyle { fontSize = 30 });//显示金币数量
     }
 
 }
