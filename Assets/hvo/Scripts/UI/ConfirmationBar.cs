@@ -6,7 +6,8 @@ using UnityEngine.UI;
 
 public class ConfirmationBar : MonoBehaviour
 {
-    [SerializeField] private GameObject m_ConfirmationBar; //确认栏
+    [SerializeField] private ResourceRequmentsDispaly m_ResourceRequmentsDispaly; //资源需求显示
+    //[SerializeField] private GameObject m_ConfirmationBar; //确认栏
     [SerializeField] private Button m_ConfirmationButton; //确认按钮
     [SerializeField] private Button m_CancelButton; //取消按钮
 
@@ -28,5 +29,10 @@ public class ConfirmationBar : MonoBehaviour
     {
         m_ConfirmationButton.onClick.RemoveAllListeners();
         m_CancelButton.onClick.RemoveAllListeners();
+    }
+    public void ShowResourceRequirements(int reqGold, int reqWood)
+    {
+        gameObject.SetActive(true);
+        m_ResourceRequmentsDispaly.ShowResourceRequirements(reqGold, reqWood);
     }
 }

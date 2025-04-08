@@ -40,6 +40,7 @@ public class placementProcess
         m_WalkableTileMap = walkableTilemap;
         m_OverlayTileMap = overlayTileMap;
         m_UnreachableTilemaps = unreachableTilemaps;
+        Debug.Log("创建建造前的tower阴影");
         //大师.......
     }
 
@@ -98,7 +99,6 @@ public class placementProcess
             ClearHightlight();
             buildposition = m_PlacementOutline.transform.position;//将建造前的tower阴影位置传递给buildposition
             UnityEngine.Object.Destroy(m_PlacementOutline);//销毁建造前的tower阴影
-            //m_PlacementOutline.transform.position = Vector3.zero;//将建造前的tower阴影位置传递给buildposition
             return true;
         }
         Debug.Log("尝试确定建造位置");

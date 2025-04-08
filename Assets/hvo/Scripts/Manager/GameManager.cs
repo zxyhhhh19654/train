@@ -20,10 +20,10 @@ public class GameManager : SigleManager<GameManager>
     [SerializeField] private ConfirmationBar m_BuildConfirmationBar;//建造确认栏
 
 
-    private int m_Gold = 1000;//金币数量
+    private int m_Gold = 1500;//金币数量
     public int Gold => m_Gold;//金币数量的getter
 
-    private int m_Wood = 1000;//食物数量
+    private int m_Wood = 1500;//食物数量
     public int Wood => m_Wood;//食物数量的getter
 
 
@@ -82,6 +82,7 @@ public class GameManager : SigleManager<GameManager>
         );//建造过程
         m_PlacementProcess.ShowPlacementOutline();//展示建造前的tower图片设置
         m_BuildConfirmationBar.ShowConfirmationBar();
+        m_BuildConfirmationBar.ShowResourceRequirements(buildAcition.GoldCost, buildAcition.WoodCost);//展示建造所需资源
         m_BuildConfirmationBar.SetupHooks(ConfirmBuildPlace, CancelBuildPlace);//设置确认和取消按钮的回调函数
         Debug.Log("开始建造过程" + buildAcition.ActionName);
         
@@ -167,9 +168,9 @@ public class GameManager : SigleManager<GameManager>
     void CancelUnit()//取消unit
     {
         m_ActvieUnit.UnSelect();
-
         m_ActionBar.ClearAction();//删除按钮后，直接消失
         m_ActionBar.Hide();//隐藏地板
+        
 
         m_ActvieUnit = null;//将activeunit置为空
 
@@ -192,6 +193,12 @@ public class GameManager : SigleManager<GameManager>
         if(m_PlacementProcess.TryFinalizePosition(out Vector3 buildPosition))//尝试确定建造位置
         {
             m_BuildConfirmationBar.HideConfirmationBar();
+            
+            new BuildingProcess(
+                m_PlacementProcess.BuildAcitionSO,
+                buildPosition
+            );
+            
             m_PlacementProcess = null;
             Debug.Log("确认建造位置" + buildPosition);
         }
@@ -213,7 +220,6 @@ public class GameManager : SigleManager<GameManager>
         m_BuildConfirmationBar.HideConfirmationBar();
         m_PlacementProcess = null;
         Debug.Log("取消建造");
-        
     }
 
     bool TryDeductResource(int goldCost, int woodCost)//尝试扣除资源
@@ -222,8 +228,11 @@ public class GameManager : SigleManager<GameManager>
         {
             m_Gold -= goldCost;//扣除金币
             m_Wood -= woodCost;//扣除食物
+            Debug.Log("扣除资源" + goldCost + " " + woodCost);
             return true;
+            
         }
+        Debug.Log("资源不足，无法建造" + goldCost + " " + woodCost);
         return false;
     }
     void OnGUI()
